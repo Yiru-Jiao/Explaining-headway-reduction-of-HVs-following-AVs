@@ -3,6 +3,7 @@ Let followers with different variety follow the same leaders.
 
 '''
 
+import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -44,7 +45,9 @@ def idm_estimation(para_idm, leader, initial_follower, l_follower):
     return trajectory
 
 
-data_path = r'U:/Vehicle Coordination Yiru/OutputData/CFAV/headway/IDM/'
+parent_dir = os.path.abspath('..') # Set your parent directory here. 
+                                   # Without change the current setting is the parent directory of this file.
+data_path = parent_dir + 'Data path example/OutputData/IDM/'
 
 idm_HH = pd.read_csv(data_path+'parameters_idm_Lyft_HH.csv', index_col=0).dropna()
 data_HH = pd.read_hdf(data_path+'cfdata_idm_Lyft_HH.h5', key='data').sort_values(['case_id','time']).set_index('case_id')
