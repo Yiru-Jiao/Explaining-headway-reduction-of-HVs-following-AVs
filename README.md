@@ -34,11 +34,14 @@ Then in the sub-folder "Car-following modelling and simulation/IDM calibration",
 
 Further in the sub-folder "Car-following modelling and simulation/Controlled simulation", run `cross_follow_leader.py` and `cross_follow_follower.py` to simulate the designed experiments.
 
-__Step 5.__ Run `Experiments.py` to repeat our experiments in the article.
+__Step 5. Leading vehicle classification__ 
 
-__*__ `DriverSpaceInference.py` is the library including classes and functions for the experiments
+In the folder "Leading vehicle driving classification", use `dataset_separation.py` to separate Lyft data into train, val, and test sets, and then use `classifier_lstm.ipynb` to train the LSTM classifier, validate the trained model, and save test results.
 
-__*__ We run the experiments in Linux with a cluster of CPUs. To be run on other OSs may need adjustments regarding the number of cores for parallel processing.
+__*__ In doing regime categorisation, we resued the code from <https://github.com/slaypni/fastdtw> to apply fast dynamic time warping. This is also indicated in the folder.
+
+__*__ We have run the IDM calibration in Linux with 15 CPUs. To be run on other OSs may need adjustments regarding the number of cores/workers for parallel processing.
+
 
 ## In order to apply the method to another dataset:
 
