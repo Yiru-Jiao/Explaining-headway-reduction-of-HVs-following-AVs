@@ -4,15 +4,23 @@
 Integrating Automated Vehicles (AVs) into existing traffic systems holds the promise of enhanced road safety, reduced congestion, and more sustainable travel. Effective integration of AVs requires understanding the interactions between AVs and Human-driving Vehicles (HVs), especially during the transition period in which AVs and HVs coexist in a mixed traffic environment. Numerous recent empirical studies find reduced headways of human drivers following an AV compared to following an HV, and attribute this reduction to behaviour changes of following vehicle drivers. However, more factors may be at play due to the inherent inconsistencies between the comparison conditions of HV-following-AV and HV-following-HV. This study scrutinises three alternative explanations for the observed reduction in headways: (1) systematic differences in car-following states during data collection, (2) systematic differences in driving variability between leading AVs and HVs, and (3) systematic differences in driving characteristics of leading AVs versus HVs. We use a large-scale dataset extracted from Lyft AV motion data, and isolate each of these explanations by data stratification and simulation. Our results show that all three mechanisms contribute to the observed reduction in headways of human drivers following AVs. In addition, our findings highlight the importance of driving homogeneity and stability in achieving reliably shorter headways. Thereby, this study offers a more comprehensive understanding on the difference between HV-AV and HV-HV interactions in mixed traffic, and is expected to promote more effective integration of AVs into human traffic.
 
 ## Package requirements
-`zarr`, `numpy`, 'pandas`, `tqdm`, `matplotlib`, `scipy`, `joblib`, `pytorch`
+`jupyter notebook`, `zarr`, `numpy`, 'pandas`, `tqdm`, `matplotlib`, `scipy`, `joblib`, `pytorch`
 
 ## In order to repeat the experiments:
 
-__1. Download and save data__
+__Step 0. Preparation__
 
-Download raw data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data path example/InputData/Lyft/"; download processed data of Waymo from <https://data.mendeley.com/datasets/wfn2c3437n/2> and save it (all_seg_paired_cf_trj_final_with_large_vehicle.csv) in the folder "Data path example/InputData/Waymo/".
+Create a conda environment for repeating the experiments. Install the required packages as listed above.
 
-__Step 2.__ Run `Preprocessing.py` in the folder `Code` first to preprocess the rawdata.
+Clone this repository, then either 1) create/define a folder for data saving and copy the subfolders in "Data path example"; or 2) use the folder "Data path example" directly.
+
+__Step 1. Download and save data__
+
+Download the trajectory data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data path example/InputData/Lyft/"; download processed data of Waymo from <https://data.mendeley.com/datasets/wfn2c3437n/2> and save it (`all_seg_paired_cf_trj_final_with_large_vehicle.csv`) in the folder "Data path example/InputData/Waymo/".
+
+__Step 2. Standardise data format (of Waymo and Lyft)__ 
+
+Run `data_format_standardization.py` in the current parent folder first to preprocess the trajectories.
 
 __Step 3.__ Use `IntersectionDetection.py` and `IntersectionData.ipynb` in the folder `Code` to identify and select intersections in the pNEUMA dataset.
 
