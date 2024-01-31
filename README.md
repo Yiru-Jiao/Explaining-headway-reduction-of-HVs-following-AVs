@@ -22,11 +22,19 @@ __Step 2. Standardise data format (of Waymo and Lyft)__
 
 Run `data_format_standardization.py` in the current parent folder first to preprocess the trajectories.
 
-__Step 3.__ Use `IntersectionDetection.py` and `IntersectionData.ipynb` in the folder `Code` to identify and select intersections in the pNEUMA dataset.
+__Step 3. Regime categorisation__ 
 
-__Step 4.__ Run `Sampling_exp1-2.py`, `Sampling_exp3.ipynb`, and `Sampling_exp4.py` in the folder `Code` to transform coordinates, and sample vehicle pairs for different experiments.
+In the folder "Car-following regime categorisation", use `regime categorisation.ipynb` to categorise car-following regimes in Waymo and Lyft datasets.
 
-__Step 4.__ Run `Experiments.py` to repeat our experiments in the article.
+__Step 4. IDM calibration and simulation__ 
+
+In the folder "Car-following modelling and simulation", run `idm_data_selection.py` to select car-following pairs that cover sufficient regimes for Intelligent Driver Modelling.
+
+Then in the sub-folder "Car-following modelling and simulation/IDM calibration", run `idm_calibration.py` to calibrate IDMs and run `loss_computation.py` to calculate calibration loss.
+
+Further in the sub-folder "Car-following modelling and simulation/Controlled simulation", run `cross_follow_leader.py` and `cross_follow_follower.py` to simulate the designed experiments.
+
+__Step 5.__ Run `Experiments.py` to repeat our experiments in the article.
 
 __*__ `DriverSpaceInference.py` is the library including classes and functions for the experiments
 
