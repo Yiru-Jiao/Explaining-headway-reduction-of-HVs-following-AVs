@@ -7,13 +7,16 @@ Test set: 100% AH labeled 0
 
 '''
 
+import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 
-original_data_path = 'localdata/InputData/Lyft/CFdata/'
-separated_data_path = 'localdata/OutputData/AV leader/data/'
+parent_dir = os.path.abspath('..') # Set your parent directory here. 
+                                   # Without change the current setting is the parent directory of this file.
+original_data_path = parent_dir + 'Data path example/InputData/Lyft/CFdata/'
+separated_data_path = parent_dir + 'Data path example/OutputData/AV leader/data/'
 np.random.seed(131)
 
 
