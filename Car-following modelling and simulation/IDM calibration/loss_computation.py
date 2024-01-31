@@ -3,6 +3,7 @@ Compute calibration loss of IDM.
 
 '''
 
+import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -49,8 +50,11 @@ def idm_loss(cfdata,parameters):
     return multip
     
 
+parent_dir = os.path.abspath('..') # Set your parent directory here. 
+                                   # Without change the current setting is the parent directory of this file.
+data_path = parent_dir + 'Data path example/OutputData/IDM/'
+
 for cfpair in ['HA','HH']:
-    data_path = r'U:/Vehicle Coordination Yiru/OutputData/CFAV/headway/IDM/'
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
     data = data.sort_values(['case_id','time']).set_index('case_id')
     metrics = ['MAE_a','MAE_v','MAE_s','RMSE_a','RMSE_v','RMSE_s']
