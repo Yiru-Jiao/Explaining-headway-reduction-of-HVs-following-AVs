@@ -45,25 +45,15 @@ __*__ In doing regime categorisation, we resued the code from <https://github.co
 __*__ We have run the IDM calibration in Linux with 15 CPUs. To be run on other OSs may need adjustments regarding the number of cores/workers for parallel processing.
 
 
-## In order to apply the method to another dataset:
-
-__Step 1.__ Save raw data in the folder "RawDatasets".
-
-__Step 2.__ Create code to align the format of the new dataset to the format of the data to be saved in the folder "InputData".
-
-__Step 3.__ Design your application according to the code in `Experiments.py`.
-
 # Citation
 ````latex
-@article{Jiao2023,
-  doi = {10.1016/j.trc.2023.104289},
-  year = {2023},
-  month = oct,
-  publisher = {Elsevier {BV}},
-  volume = {155},
-  pages = {104289},
-  author = {Yiru Jiao and Simeon C. Calvert and Sander {van Cranenburgh} and Hans {van Lint}},
-  title = {Inferring vehicle spacing in urban traffic from trajectory data},
-  journal = {Transportation Research Part C: Emerging Technologies}
+@article{Jiao2024,
+  doi = {},
+  year = {2024},
+  volume = {},
+  pages = {},
+  author = {Yiru Jiao and Guopeng Li and Simeon C. Calvert and Sander {van Cranenburgh} and Hans {van Lint}},
+  title = {Beyond behaviour change: investigating alternative explanations for shorter time headways when human drivers follow automated vehicles},
+  journal = {}
 }
 ````
