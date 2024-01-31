@@ -8,9 +8,9 @@ Integrating Automated Vehicles (AVs) into existing traffic systems holds the pro
 
 ## In order to repeat the experiments:
 
-1. Download and save data
+__1. Download and save data__
 
-Download raw data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder ; download raw data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data path example/InputData/Waymo/".
+Download raw data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data path example/InputData/Lyft/"; download processed data of Waymo from <https://data.mendeley.com/datasets/wfn2c3437n/2> and save it (all_seg_paired_cf_trj_final_with_large_vehicle.csv) in the folder "Data path example/InputData/Waymo/".
 
 __Step 2.__ Run `Preprocessing.py` in the folder `Code` first to preprocess the rawdata.
 
