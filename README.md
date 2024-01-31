@@ -38,7 +38,7 @@ __Step 5. Leading vehicle classification__
 
 In the folder "Leading vehicle driving classification", use `dataset_separation.py` to separate Lyft data into train, val, and test sets, and then use `classifier_lstm.ipynb` to train the LSTM classifier, validate the trained model, and save test results.
 
-\n
+ 
 
 __*__ In doing regime categorisation, we resued the code from <https://github.com/slaypni/fastdtw> to apply fast dynamic time warping. This is also indicated in the folder.
 
