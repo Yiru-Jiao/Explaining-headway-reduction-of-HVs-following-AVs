@@ -3,13 +3,17 @@ Select CF data with complete regimes.
 
 '''
 
+import os
 import numpy as np
 import pandas as pd
 
+parent_dir = os.path.abspath('..') # Set your parent directory here. 
+                                   # Without change the current setting is the parent directory of this file.
+
 
 def get_data(cfpair, dataset):
-    data_path = r'U:/Vehicle Coordination Yiru/InputData/'
-    regime_path = r'U:/Vehicle Coordination Yiru/OutputData/CFAV/headway/CF regime/'
+    data_path = parent_dir + 'Data path example/InputData/'
+    regime_path = parent_dir + 'Data path example/OutputData/CF regime/'
 
     if dataset=='Waymo':
         cfdata = pd.read_hdf(data_path+'Waymo/CFdata/'+cfpair+'.h5', key='data')
@@ -32,7 +36,7 @@ def get_data(cfpair, dataset):
     return cfdata
     
 
-data_path = r'U:/Vehicle Coordination Yiru/OutputData/CFAV/headway/IDM/'
+data_path = parent_dir + 'Data path example/OutputData/IDM/'
 
 
 # select data
