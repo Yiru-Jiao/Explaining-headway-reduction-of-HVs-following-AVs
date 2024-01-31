@@ -9,7 +9,7 @@ import zarr
 from tqdm import tqdm
 
 
-data_path = r'U:/Vehicle Coordination Yiru/InputData/'
+data_path = './Data path example/InputData/'
 
 
 # Waymo CF data
