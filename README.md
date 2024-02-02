@@ -47,15 +47,15 @@ __*__ In doing regime categorisation, we resued the code from <https://github.co
 __*__ We have run the IDM calibration in Linux with 15 CPUs. To be run on other OSs may need adjustments regarding the number of cores/workers for parallel processing.
 
 
-# Citation
-````latex
-@article{Jiao2024,
-  doi = {},
-  year = {2024},
-  volume = {},
-  pages = {},
-  author = {Yiru Jiao and Guopeng Li and Simeon C. Calvert and Sander {van Cranenburgh} and Hans {van Lint}},
-  title = {Beyond behaviour change: investigating alternative explanations for shorter time headways when human drivers follow automated vehicles},
-  journal = {}
-}
-````
+% ## Citation
+% ````latex
+% @article{Jiao2024,
+%  doi = {},
+%  year = {2024},
+%  volume = {},
+%  pages = {},
+%  author = {Yiru Jiao and Guopeng Li and Simeon C. Calvert and Sander {van Cranenburgh} and Hans {van Lint}},
+%  title = {Beyond behaviour change: investigating alternative explanations for shorter time headways when human drivers follow automated vehicles},
+%  journal = {}
+%}
+%````
