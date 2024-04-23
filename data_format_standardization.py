@@ -108,14 +108,14 @@ def get_data(cfpair, data_path, dataset='train'):
 
 for cfpair in ['AH','HA','HH']:
     for dataset in ['train','val']:
-        data = get_data(cfpair, data_path+'Lyft5/CFdata/', dataset=dataset)
+        data = get_data(cfpair, data_path+'Lyft/CFdata/', dataset=dataset)
         group = data.groupby('case_id').time
         print('Number of incomplete trajectories', group.first().index[(10*(group.last()-group.first()+0.1)).astype(int)>group.count()].values.shape)
-        data.to_hdf(data_path + 'Lyft5/CFdata/'+cfpair+'_'+dataset+'.h5', key='data', mode='w')
+        data.to_hdf(data_path + 'Lyft/CFdata/'+cfpair+'_'+dataset+'.h5', key='data', mode='w')
 
-    data_train = pd.read_hdf(data_path + 'Lyft5/CFdata/'+cfpair+'_train.h5', key='data')
-    data_val = pd.read_hdf(data_path + 'Lyft5/CFdata/'+cfpair+'_val.h5', key='data')
+    data_train = pd.read_hdf(data_path + 'Lyft/CFdata/'+cfpair+'_train.h5', key='data')
+    data_val = pd.read_hdf(data_path + 'Lyft/CFdata/'+cfpair+'_val.h5', key='data')
     data_train['case_id'] = (data_train['case_id'] + 1e5 ).astype(int)
     data_val['case_id'] = (data_val['case_id'] + 3e5 ).astype(int)
     data = pd.concat([data_train, data_val], axis=0).reset_index(drop=True)
-    data.to_hdf(data_path + 'Lyft5/CFdata/'+cfpair+'.h5', key='data', mode='w')
+    data.to_hdf(data_path + 'Lyft/CFdata/'+cfpair+'.h5', key='data', mode='w')
