@@ -134,7 +134,7 @@ def calibrate_idm_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median, a
 
 parent_dir = os.path.abspath('..') # Set your parent directory here. 
                                    # Without change the current setting is the parent directory of this file.
-data_path = parent_dir + 'Data path example/OutputData/IDM/'
+data_path = parent_dir + 'Data/OutputData/Variability/'
 
 for cfpair in ['HH','HA']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
@@ -168,6 +168,6 @@ for cfpair in ['HH','HA']:
         i += 1
         if savef:
             results_tosave = pd.DataFrame(results, columns=['v_0','s_0','T','alpha','beta'], index=case_ids)
-            results_tosave.to_csv(data_path+'parameters_idm_Lyft_'+cfpair+'.csv')
+            results_tosave.to_csv(data_path+'idm/parameters_idm_Lyft_'+cfpair+'.csv')
         
         progress_bar.set_postfix(loss=idm_loss(cfdata,result), refresh=False)
