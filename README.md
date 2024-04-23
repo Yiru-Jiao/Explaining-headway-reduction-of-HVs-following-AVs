@@ -14,11 +14,11 @@ __Step 0. Preparation__
 
 Create a conda environment for repeating the experiments. Install the required packages as listed above.
 
-Clone this repository, then either 1) create/define a folder for data saving and copy the subfolders in "Data path example"; or 2) use the folder "Data path example" directly.
+Clone this repository, then either 1) create/define a folder for data saving and copy the subfolders in "Data"; or 2) use the folder "Data" directly.
 
 __Step 1. Download and save data__
 
-Download the trajectory data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data path example/InputData/Lyft/"; download processed data of Waymo from <https://data.mendeley.com/datasets/wfn2c3437n/2> and save it (`all_seg_paired_cf_trj_final_with_large_vehicle.csv`) in the folder "Data path example/InputData/Waymo/".
+Download the trajectory data of Lyft from <https://github.com/RomainLITUD/Car-Following-Dataset-HV-vs-AV> and save them in the folder "Data/InputData/Lyft/"; download processed data of Waymo from <https://data.mendeley.com/datasets/wfn2c3437n/2> and save it (`all_seg_paired_cf_trj_final_with_large_vehicle.csv`) in the folder "Data/InputData/Waymo/".
 
 __Step 2. Standardise data format (of Waymo and Lyft)__ 
 
