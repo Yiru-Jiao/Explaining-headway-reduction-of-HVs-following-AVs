@@ -23,8 +23,6 @@ def idm_global_obj(parameters, cfdata):
     # beta: comfortable deceleration
 
     position, speed, time = cfdata[['x_follower','v_follower','time']].values.T
-    # l_leader = cfdata['l_leader'].iloc[0]
-    # l_follower = cfdata['l_follower'].iloc[0]
 
     s_star = np.zeros_like(time) * np.nan
     acc_hat = np.zeros_like(time) * np.nan
@@ -35,7 +33,7 @@ def idm_global_obj(parameters, cfdata):
     position_hat[0] = position[0]
     for t in np.arange(0,len(speed_hat),3): # operational time interval is 0.3 second
         s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-cfdata['v_leader'].iloc[t])/2/np.sqrt(alpha*beta))
-        spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]# + l_leader/2 - l_follower/2
+        spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
         if speed_hat[t]<=0. and spacing_hat[t]<s_0:
             acc_hat[t] = 0.
         else:
@@ -59,8 +57,6 @@ def idm_loss(cfdata,parameters):
     else:
         v_0, s_0, T, alpha, beta = parameters
         delta = 4.
-        # l_leader = cfdata['l_leader'].iloc[0]
-        # l_follower = cfdata['l_follower'].iloc[0]
         
         s_star = np.zeros_like(time) * np.nan
         acc_hat = np.zeros_like(time) * np.nan
@@ -71,7 +67,7 @@ def idm_loss(cfdata,parameters):
         position_hat[0] = position[0]
         for t in np.arange(0,len(speed_hat),3): # operational time interval is 0.3 second
             s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-cfdata['v_leader'].iloc[t])/2/np.sqrt(alpha*beta))
-            spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]# + l_leader/2 - l_follower/2
+            spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
             if speed_hat[t]<=0. and spacing_hat[t]<s_0:
                 acc_hat[t:t+3] = 0.
             else:
@@ -88,7 +84,6 @@ def calibrate_idm_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median, a
     
     a_max = max(0.5,min(4.5,np.percentile(a_follower[a_follower>0], 90) if np.any(a_follower>0) else 0.5))
     d_max = max(0.5,min(4.5, np.percentile(-a_follower[a_follower<0], 75) if np.any(a_follower<0) else 0.5))
-    # print(a_max, d_max, v_follower_max, dhw_min, thw_min, thw_median)
     res = differential_evolution(idm_global_obj,
                                  args=(cfdata,),
                                  x0=[v_follower_max,
@@ -101,46 +96,24 @@ def calibrate_idm_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median, a
                                          (max(0.5,thw_min-0.2),10.),
                                          (0.3,a_max+1.5),
                                          (d_max-0.2,6.)],
-                                #  bounds=[(10.,29.),
-                                #          (3.5, 20.),
-                                #          (0.5,10.),
-                                #          (0.5,6.),
-                                #          (0.5,6.)],
                                  popsize=15,
                                  maxiter=750,
                                  workers=15)
-    
-    # res = minimize(idm_global_obj, 
-    #                args=(cfdata,),
-    #                x0=[v_follower_max,
-    #                    dhw_min,
-    #                    thw_median,
-    #                    a_max,
-    #                    d_median],
-    #                bounds=[(10.,min(29., v_follower_max+10.)),
-    #                        (dhw_min-0.2, 20.),
-    #                        (max(0.5,thw_min-0.2),10.),
-    #                        (a_max-2,a_max+2),
-    #                        (d_median-2,d_median+2)],
-    #                method='Nelder-Mead',
-    #                tol=1e-6
-    #                )
-
     if res.success:
         return res.x
     else:
         return np.zeros(5) * np.nan
     
 
-parent_dir = os.path.abspath('..') # Set your parent directory here. 
-                                   # Without change the current setting is the parent directory of this file.
+parent_dir = './' # Set your parent directory here. 
+                  # Without change the current setting is the parent directory of this file.
 data_path = parent_dir + 'Data/OutputData/Variability/'
 
 for cfpair in ['HH','HA']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
     data = data.sort_values(['case_id','time']).set_index('case_id')
 
-    data['dhw'] = data['x_leader'] - data['x_follower']# - data['l_follower']/2 + data['l_leader']/2
+    data['dhw'] = data['x_leader'] - data['x_follower']
     data['thw'] = data['dhw']/data['v_follower']
 
     case_ids = data.index.unique().values

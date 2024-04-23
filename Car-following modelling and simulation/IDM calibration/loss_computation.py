@@ -27,7 +27,7 @@ def idm_loss(cfdata,parameters):
         speed_hat[0] = speed[0]
         position_hat = np.zeros_like(position) * np.nan
         position_hat[0] = position[0]
-        for t in np.arange(0,len(speed_hat)-1,1): # operational time interval is 0.3 second
+        for t in np.arange(0,len(speed_hat)-1,1): # update every 0.1 second
             s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-cfdata['v_leader'].iloc[t])/2/np.sqrt(alpha*beta))
             spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]# + l_leader/2 - l_follower/2
             if speed_hat[t]<=0. and spacing_hat[t]<s_0:
@@ -38,7 +38,7 @@ def idm_loss(cfdata,parameters):
             speed_hat[speed_hat<0.] = 0.
             position_hat[t+1] = position_hat[t] + (speed_hat[t]+speed_hat[t+1])/2 * (time[t+1]-time[t])
 
-        speed_hat[(speed<0.1)&(speed_hat<0.1)] = np.nan
+        speed_hat[(speed<0.1)&(speed_hat<0.1)] = np.nan # it's not meaningful to compute loss when speed is near zero
         acc_hat[(abs(acceleration)<0.1)&(abs(acc_hat)<0.01)] = np.nan
         multip = [np.nanmean(abs(acceleration[:-1] - acc_hat[:-1])),
                   np.nanmean(abs(speed[1:] - speed_hat[1:])),
@@ -50,8 +50,8 @@ def idm_loss(cfdata,parameters):
     return multip
     
 
-parent_dir = os.path.abspath('..') # Set your parent directory here. 
-                                   # Without change the current setting is the parent directory of this file.
+parent_dir = './' # Set your parent directory here. 
+                  # Without change the current setting is the parent directory of this file.
 data_path = parent_dir + 'Data/OutputData/Variability/'
 
 for cfpair in ['HA','HH']:
