@@ -32,9 +32,9 @@ __Step 4. IDM calibration and simulation__
 
 In the folder "Car-following modelling and simulation", run `idm_data_selection.py` to select car-following pairs that cover sufficient regimes for Intelligent Driver Modelling.
 
-Then in the sub-folder "Car-following modelling and simulation/IDM calibration", run `idm_calibration.py` to calibrate IDMs and run `loss_computation.py` to calculate calibration loss.
+Then in the sub-folder "Car-following modelling and simulation/IDM calibration", run `idm_calibration.py` to calibrate IDMs and run `loss_computation.py` to calculate calibration loss. Further in the sub-folder "IDM calibration/Appendix", we offer the calibration of the other two car-following models, Newell and Gipps, to enhance the robustness of the results.
 
-Further in the sub-folder "Car-following modelling and simulation/Controlled simulation", run `cross_follow_leader.py` and `cross_follow_follower.py` to simulate the designed experiments.
+Finally, in the sub-folder "Car-following modelling and simulation/Controlled simulation", run `cross_follow_leader.py` and `cross_follow_follower.py` to simulate the designed experiments.
 
 __Step 5. Leading vehicle classification__ 
 
