@@ -12,8 +12,8 @@ parent_dir = os.path.abspath('..') # Set your parent directory here.
 
 
 def get_data(cfpair, dataset):
-    data_path = parent_dir + 'Data path example/InputData/'
-    regime_path = parent_dir + 'Data path example/OutputData/CF regime/'
+    data_path = parent_dir + 'Data/InputData/'
+    regime_path = parent_dir + 'Data/OutputData/CF regime/'
 
     if dataset=='Waymo':
         cfdata = pd.read_hdf(data_path+'Waymo/CFdata/'+cfpair+'.h5', key='data')
@@ -36,7 +36,7 @@ def get_data(cfpair, dataset):
     return cfdata
     
 
-data_path = parent_dir + 'Data path example/OutputData/IDM/'
+data_path = parent_dir + 'Data/OutputData/Variability/'
 
 
 # select data
