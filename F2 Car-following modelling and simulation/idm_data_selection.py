@@ -7,8 +7,8 @@ import os
 import numpy as np
 import pandas as pd
 
-parent_dir = os.path.abspath('..') # Set your parent directory here. 
-                                   # Without change the current setting is the parent directory of this file.
+parent_dir = './' # Set your parent directory here. 
+                   # Without change the current setting is the parent directory of this file.
 
 
 def get_data(cfpair, dataset):
@@ -37,7 +37,6 @@ def get_data(cfpair, dataset):
     
 
 data_path = parent_dir + 'Data/OutputData/Variability/'
-
 
 # select data
 for dataset in ['Waymo', 'Lyft']:
