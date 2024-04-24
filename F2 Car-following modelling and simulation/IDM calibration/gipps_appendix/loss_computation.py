@@ -26,8 +26,9 @@ def gipps_loss(cfdata,parameters):
         position_hat[:id_tau] = position[:id_tau]
         for t in np.arange(0,len(speed_hat)-id_tau,1): # update every 0.1 second
             spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
-            v_acc = speed[t] + 2.5*alpha*tau*(1-speed[t]/v_0) * np.sqrt(0.025+speed[t]/v_0)
-            v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
+            v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
+            braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader
+            v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
             position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
 

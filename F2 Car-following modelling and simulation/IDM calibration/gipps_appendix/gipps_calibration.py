@@ -13,7 +13,6 @@ warnings.filterwarnings('ignore')
 
 def gipps_global_obj(parameters, cfdata):
     v_0, s_0, tau, alpha, b, b_leader = parameters
-    theta = tau/2
     id_tau = int(tau/0.1)
     # v_0: free-flow speed
     # s_0: minimum spacing (effective length)
@@ -32,7 +31,8 @@ def gipps_global_obj(parameters, cfdata):
     for t in np.arange(0,len(speed_hat)-id_tau,1):
         spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
         v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
-        v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
+        braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader
+        v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
         position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
         
@@ -50,7 +50,6 @@ def gipps_loss(cfdata, parameters):
         mae_v = np.nan
     else:
         v_0, s_0, tau, alpha, b, b_leader = parameters
-        theta = tau/2
         id_tau = int(tau/0.1)
         
         spacing_hat = np.zeros_like(time) * np.nan
@@ -61,7 +60,8 @@ def gipps_loss(cfdata, parameters):
         for t in np.arange(0,len(speed_hat)-id_tau,1):
             spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
             v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
-            v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
+            braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader
+            v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
             position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
             
