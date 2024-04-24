@@ -16,7 +16,6 @@ def gipps_loss(cfdata,parameters):
         multip = np.zeros(6) * np.nan
     else:
         v_0, s_0, tau, alpha, b, b_leader = parameters
-        theta = tau/2
         id_tau = int(tau/0.1)
         
         spacing_hat = np.zeros_like(time) * np.nan
