@@ -11,7 +11,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-
 def idm_estimation(para_idm, leader, initial_follower, l_follower):
     v_0, s_0, T, alpha, beta = para_idm[['v_0', 's_0', 'T', 'alpha', 'beta']].values
     delta = 4.
@@ -60,7 +59,7 @@ def gipps_estimation(para_gipps, leader, initial_follower, l_follower):
     position_hat = np.zeros_like(time) * np.nan
     position_hat[:id_tau] = x_follower[:id_tau]
     for t in np.arange(0,len(speed_hat)-id_tau,1): # update every 0.1 second
-        spacing_hat[t] = x_leader[t] - position_hat[t]
+        spacing_hat[t] = x_leader[t] - position_hat[t] #+ l_leader/2 - l_follower/2
         v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
         v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(v_leader[t])**2/b_leader))
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
@@ -79,14 +78,15 @@ parent_dir = './' # Set your parent directory here.
 data_path = parent_dir + 'Data/OutputData/Variability/'
 
 
-for model in ['idm','gipps']:
-    para_HH = pd.read_csv(data_path+model+'/parameters_idm_Lyft_HH.csv', index_col=0).dropna()
+for model, simulate in zip(['idm','gipps'], [idm_estimation, gipps_estimation]):
+    print('Model: {}'.format(model))
+    para_HH = pd.read_csv(data_path+model+'/parameters_Lyft_HH.csv', index_col=0).dropna()
     data_HH = pd.read_hdf(data_path+'cfdata_idm_Lyft_HH.h5', key='data').sort_values(['case_id','time']).set_index('case_id')
 
     para_HH_lowerVar = para_HH.loc[np.random.RandomState(100).choice(para_HH.index, size=291, replace=False)]
     para_HH_higherVar = para_HH.loc[~para_HH.index.isin(para_HH_lowerVar.index)]
-    para_HH_lowerVar.to_csv(data_path+'crossfollow/'+model+'/parameters_idm_Lyft_HHlowerVar.csv')
-    para_HH_higherVar.to_csv(data_path+'crossfollow/'+model+'/parameters_idm_Lyft_HHhigherVar.csv')
+    para_HH_lowerVar.to_csv(data_path+'crossfollow/'+model+'/parameters_Lyft_HHlowerVar.csv')
+    para_HH_higherVar.to_csv(data_path+'crossfollow/'+model+'/parameters_Lyft_HHhigherVar.csv')
 
     follower_data = data_HH
     for follower_set, leader_set in zip(['HHlowerVar','HHhigherVar'], ['HH','HH']):
@@ -119,7 +119,7 @@ for model in ['idm','gipps']:
                 para_idm = follower_idm.loc[follower_id]
                 length_follower = follower_data.loc[follower_id]['l_follower'].iloc[0]
 
-                traj = idm_estimation(para_idm, leader, initial_follower, length_follower)
+                traj = simulate(para_idm, leader, initial_follower, length_follower)
                 traj['leader_id'] = leader_id
                 traj['follower_id'] = follower_id
                 traj['case_id'] = case_id
@@ -130,7 +130,7 @@ for model in ['idm','gipps']:
         trajectories = trajectories[trajectories['leader_id']!=trajectories['follower_id']]
         trajectories = trajectories.drop_duplicates(['leader_id','follower_id','time'])
         print('follower: {}, leader: {}, number of cases: {}'.format(follower_set, leader_set, len(trajectories['case_id'].unique())))
-        trajectories['dhw'] = trajectories['x_leader'] - trajectories['x_follower'] - trajectories['l_follower']/2 + trajectories['l_leader']/2
+        trajectories['dhw'] = trajectories['x_leader'] - trajectories['x_follower']# - trajectories['l_follower']/2 + trajectories['l_leader']/2
         trajectories['thw'] = trajectories['dhw']/trajectories['v_follower']
 
-        trajectories.to_hdf(data_path+'crossfollow/crossfollow_Lyft_f'+follower_set+'_l'+leader_set+'.h5', key='data')
+        trajectories.to_hdf(data_path+'crossfollow/'+model+'/crossfollow_Lyft_f'+follower_set+'_l'+leader_set+'.h5', key='data')
