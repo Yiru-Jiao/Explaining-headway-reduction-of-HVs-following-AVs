@@ -494,6 +494,71 @@ def idm_parameters(idm_HH, idm_HA):
 
 
 
+def gipps_parameters(gipps_HH, gipps_HA):
+    vars = ['v_0', 's_0', 'tau', 'alpha', 'b', 'b_leader']
+    titles = [r'$v_0$ $(m/s)$',
+              r'$s_0$ $(m)$',
+              r'$tau$ $(s)$',
+              r'$\alpha$ $(m/s^2)$',
+              r'$b$ $(m/s^2)$',
+              r'$b_{\mathrm{leader}}$ $(m/s^2)$']
+
+    n_bins = 20
+
+    bins = [np.linspace(10-(29-10)/(n_bins-1)/2,29+(29-10)/(n_bins-1)/2,n_bins), 
+            np.linspace(3.5-(16-3.5)/(n_bins-1)/2,16+(16-3.5)/(n_bins-1)/2,n_bins),  
+            np.linspace(0.-(5-0.)/(n_bins-1)/2,5+(5-0.)/(n_bins-1)/2,n_bins), 
+            np.linspace(0.3-(6.-0.3)/(n_bins-1)/2,6.+(6.-0.3)/(n_bins-1)/2,n_bins), 
+            np.linspace(0.3-(6.-0.3)/(n_bins-1)/2,6.+(6.-0.3)/(n_bins-1)/2,n_bins),
+            np.linspace(0.3-(6.-0.3)/(n_bins-1)/2,6.+(6.-0.3)/(n_bins-1)/2,n_bins)]
+    
+    xticks = [[12,18,24],
+              [5,9,13],
+              [1,2,3,4],
+              [1,3,5],
+              [1,3,5],
+              [1,3,5]]
+
+    fig, axes = plt.subplots(1,6,figsize=(7.5,0.9),sharey=True)
+    for var, title, bin, xtick, ax in zip(vars, titles, bins, xticks, axes):
+        for results,label,color,ls in zip([gipps_HH, gipps_HA], ['HH','HA'],['tab:blue','tab:red'],['-','--']):
+            ax.hist(results[var], bins=bin,
+                    weights=np.ones(len(results[var]))/len(results[var]),
+                    fc=rgb_color(color,0.3), ec=rgb_color(color,1),histtype='stepfilled', ls=ls,
+                    linewidth=0.5, label=label)
+        ax.set_xlabel(title, labelpad=1.5, fontsize=8)
+        ax.set_xticks(xtick)
+        table = ax.table(cellText=np.round([[gipps_HH[var].mean(), gipps_HH[var].std()],
+                                            [gipps_HA[var].mean(), gipps_HA[var].std()]],2),
+                colLabels=['Mean','Std.'],
+                loc='lower center',
+                bbox=[0.,-1.3,1.,0.65],
+                cellLoc='center',
+                rowLoc='center',
+                edges='horizontal')
+        table.auto_set_font_size(False)
+        table.set_fontsize(9)
+        for child in table.get_children():
+            child.set(linewidth=0.5)
+        for cell in table._cells:
+            text = table._cells[cell].get_text()
+            text.set_fontfamily('Times New Roman')
+
+    axes[0].set_ylabel('Relative frequency', y=0.4, fontsize=8)
+    handle, label = axes[0].get_legend_handles_labels()
+    axes[0].legend([handle[0], handle[1]], 
+                   ['HH','HA'], 
+                   loc='lower center',
+                   handletextpad=-1.7,
+                   bbox_to_anchor=(-0.2, -1.425),
+                   handlelength=2,
+                   handleheight=1.1,
+                   frameon=False, fontsize=8)
+    
+    return fig, axes
+
+
+
 def idm_sampling(idm_HA, idm_HH):
     vars = ['v_0','s_0','T','alpha','beta']
     titles = [r'$v_0$ $(m/s)$',
