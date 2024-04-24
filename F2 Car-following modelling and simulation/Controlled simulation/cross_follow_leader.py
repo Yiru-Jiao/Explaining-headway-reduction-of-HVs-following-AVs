@@ -46,7 +46,6 @@ def idm_estimation(para_idm, leader, initial_follower, l_follower):
 
 def gipps_estimation(para_gipps, leader, initial_follower, l_follower):
     v_0, s_0, tau, alpha, b, b_leader = para_gipps[['v_0', 's_0', 'tau', 'alpha', 'b', 'b_leader']].values
-    theta = tau/2
     id_tau = int(tau/0.1)
 
     time, x_leader, v_leader, l_leader = leader[['time','x_leader','v_leader','l_leader']].values.T
@@ -60,8 +59,10 @@ def gipps_estimation(para_gipps, leader, initial_follower, l_follower):
     position_hat[:id_tau] = x_follower[:id_tau]
     for t in np.arange(0,len(speed_hat)-id_tau,1): # update every 0.1 second
         spacing_hat[t] = x_leader[t] - position_hat[t] #+ l_leader/2 - l_follower/2
+
         v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
-        v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(v_leader[t])**2/b_leader))
+        braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(v_leader[t])**2/b_leader
+        v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
         position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
 
@@ -70,7 +71,6 @@ def gipps_estimation(para_gipps, leader, initial_follower, l_follower):
     trajectory = follower.merge(leader, on='time', how='left')
 
     return trajectory
-
 
 
 parent_dir = './' # Set your parent directory here. 
@@ -85,8 +85,8 @@ for model, simulate in zip(['idm','gipps'], [idm_estimation, gipps_estimation]):
     data_HH = pd.read_hdf(data_path+'cfdata_idm_Lyft_HH.h5', key='data').sort_values(['case_id','time']).set_index('case_id')
     regime_list_HH = pd.read_csv(parent_dir+'Data/OutputData/CF regime/Lyft/regimes/regimes_list_HH.csv', index_col=0)
 
-    # Repeat the test 5 times
-    for count in tqdm(range(5)):
+    # Repeat the test 4 times
+    for count in tqdm(range(4)):
         para_HH_lowerVar_id = regime_list_HH.loc[para_HH.index].sort_values(['F','S'], ascending=False).index[count]
         para_HH_lowerVar = para_HH.loc[para_HH_lowerVar_id]
         para_HH_higherVar = para_HH.loc[para_HH.index!=para_HH_lowerVar_id]
