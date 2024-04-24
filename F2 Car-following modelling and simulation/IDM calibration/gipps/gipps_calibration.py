@@ -29,16 +29,16 @@ def gipps_global_obj(parameters, cfdata):
     speed_hat[:id_tau] = speed[:id_tau]
     position_hat = np.zeros_like(position) * np.nan
     position_hat[:id_tau] = position[:id_tau]
-    for t in np.arange(0,len(speed_hat)-id_tau,3): # operational time interval is 0.3 second
+    for t in np.arange(0,len(speed_hat)-id_tau,1):
         spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
-        v_acc = speed[t] + 2.5*alpha*tau*(1-speed[t]/v_0) * np.sqrt(0.025+speed[t]/v_0)
-        v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
+        v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
+        v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
-        position_hat[t+id_tau] = position_hat[t+id_tau-3] + (speed_hat[t+id_tau-3]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-3])
+        position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
         
     speed[speed==0.] = np.nan
-    loss_v = np.nansum((speed_hat[1:] - speed[1:])**2/abs(speed[1:]))/np.nansum(abs(speed[1:]))
-    loss_x = np.nansum((position_hat[1:] - position[1:])**2/abs(position[1:]))/np.nansum(abs(position[1:]))
+    loss_v = np.nansum((speed_hat[id_tau:] - speed[id_tau:])**2/abs(speed[id_tau:]))/np.nansum(abs(speed[id_tau:]))
+    loss_x = np.nansum((position_hat[id_tau:] - position[id_tau:])**2/abs(position[id_tau:]))/np.nansum(abs(position[id_tau:]))
 
     return loss_v + loss_x
 
@@ -58,12 +58,12 @@ def gipps_loss(cfdata, parameters):
         speed_hat[:id_tau] = speed[:id_tau]
         position_hat = np.zeros_like(position) * np.nan
         position_hat[:id_tau] = position[:id_tau]
-        for t in np.arange(0,len(speed_hat)-id_tau,3): # operational time interval is 0.3 second
+        for t in np.arange(0,len(speed_hat)-id_tau,1):
             spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
-            v_acc = speed[t] + 2.5*alpha*tau*(1-speed[t]/v_0) * np.sqrt(0.025+speed[t]/v_0)
-            v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
+            v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
+            v_dec = -(tau+theta)*b + np.sqrt((tau+theta)**2*b**2 + b*(2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader))
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
-            position_hat[t+id_tau] = position_hat[t+id_tau-3] + (speed_hat[t+id_tau-3]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-3])
+            position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
             
         speed_diff = abs(speed[id_tau:] - speed_hat[id_tau:])
         speed_diff = speed_diff[speed_diff>=0.]
@@ -123,8 +123,8 @@ for cfpair in ['HH','HA']:
         cfdata = data.loc[case_id]
 
         # make the initial position of follower larger than 0
-        cfdata['x_follower'] = cfdata['x_follower'] - cfdata['x_follower'].min() + 1.
         cfdata['x_leader'] = cfdata['x_leader'] - cfdata['x_follower'].min() + 1.
+        cfdata['x_follower'] = cfdata['x_follower'] - cfdata['x_follower'].min() + 1.
 
         result = calibrate_gipps_global(cfdata, 
                                         max(12.5,cfdata['v_follower'].max()),
