@@ -56,8 +56,8 @@ for cfpair in ['HA','HH']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
     data = data.sort_values(['case_id','time']).set_index('case_id')
     metrics = ['MAE_a','MAE_v','MAE_s','RMSE_a','RMSE_v','RMSE_s']
-    idm = pd.read_csv(data_path+'idm/parameters_idm_Lyft_'+cfpair+'.csv', index_col=0)
+    idm = pd.read_csv(data_path+'idm/parameters_Lyft_'+cfpair+'.csv', index_col=0)
     loss = pd.DataFrame(index=idm.index, columns=metrics)
     for case_id in tqdm(idm.index.values):
         loss.loc[case_id, metrics] = idm_loss(data.loc[case_id],idm.loc[case_id])
-    loss.to_csv(data_path+'idm/loss_idm_Lyft_'+cfpair+'.csv')
+    loss.to_csv(data_path+'idm/loss_Lyft_'+cfpair+'.csv')

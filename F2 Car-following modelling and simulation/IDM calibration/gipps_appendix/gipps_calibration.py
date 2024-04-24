@@ -135,6 +135,6 @@ for cfpair in ['HH','HA']:
         i += 1
         if savef:
             results_tosave = pd.DataFrame(results, columns=['v_0','s_0','tau','alpha','b','b_leader'], index=case_ids)
-            results_tosave.to_csv(data_path+'gipps/parameters_gipps_Lyft_'+cfpair+'.csv')
+            results_tosave.to_csv(data_path+'gipps/parameters_Lyft_'+cfpair+'.csv')
         
         progress_bar.set_postfix(loss=gipps_loss(cfdata,result), refresh=False)

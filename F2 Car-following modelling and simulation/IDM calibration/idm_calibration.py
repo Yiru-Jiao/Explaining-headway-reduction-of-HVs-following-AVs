@@ -141,6 +141,6 @@ for cfpair in ['HH','HA']:
         i += 1
         if savef:
             results_tosave = pd.DataFrame(results, columns=['v_0','s_0','T','alpha','beta'], index=case_ids)
-            results_tosave.to_csv(data_path+'idm/parameters_idm_Lyft_'+cfpair+'.csv')
+            results_tosave.to_csv(data_path+'idm/parameters_Lyft_'+cfpair+'.csv')
         
         progress_bar.set_postfix(loss=idm_loss(cfdata,result), refresh=False)

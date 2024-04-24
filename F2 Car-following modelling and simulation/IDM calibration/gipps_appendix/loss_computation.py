@@ -48,8 +48,8 @@ for cfpair in ['HA','HH']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
     data = data.sort_values(['case_id','time']).set_index('case_id')
     metrics = ['MAE_v','MAE_s','RMSE_v','RMSE_s']
-    gipps = pd.read_csv(data_path+'gipps/parameters_gipps_Lyft_'+cfpair+'.csv', index_col=0)
+    gipps = pd.read_csv(data_path+'gipps/parameters_Lyft_'+cfpair+'.csv', index_col=0)
     loss = pd.DataFrame(index=gipps.index, columns=metrics)
     for case_id in tqdm(gipps.index.values):
         loss.loc[case_id, metrics] = gipps_loss(data.loc[case_id],gipps.loc[case_id])
-    loss.to_csv(data_path+'gipps/loss_gipps_Lyft_'+cfpair+'.csv')
+    loss.to_csv(data_path+'gipps/loss_Lyft_'+cfpair+'.csv')
