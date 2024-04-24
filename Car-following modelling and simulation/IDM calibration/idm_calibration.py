@@ -105,9 +105,10 @@ def calibrate_idm_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median, a
         return np.zeros(5) * np.nan
     
 
-parent_dir = './' # Set your parent directory here. 
-                  # Without change the current setting is the parent directory of this file.
-data_path = parent_dir + 'Data/OutputData/Variability/'
+# parent_dir = './' # Set your parent directory here. 
+#                   # Without change the current setting is the parent directory of this file.
+# data_path = parent_dir + 'Data/OutputData/Variability/'
+data_path = '../OutputData/'
 
 for cfpair in ['HH','HA']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
@@ -128,8 +129,8 @@ for cfpair in ['HH','HA']:
         cfdata = data.loc[case_id]
 
         # make the initial position of follower larger than 0
-        cfdata['x_follower'] = cfdata['x_follower'] - cfdata['x_follower'].min() + 1.
         cfdata['x_leader'] = cfdata['x_leader'] - cfdata['x_follower'].min() + 1.
+        cfdata['x_follower'] = cfdata['x_follower'] - cfdata['x_follower'].min() + 1.
 
         result = calibrate_idm_global(cfdata, 
                                       max(12.5,cfdata['v_follower'].max()),
