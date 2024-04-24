@@ -37,7 +37,8 @@ def idm_loss(cfdata,parameters):
             position_hat[t+1] = position_hat[t] + (speed_hat[t]+speed_hat[t+1])/2 * (time[t+1]-time[t])
 
         speed_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan # it's not meaningful to compute loss when speed is near zero
-        acc_hat[(abs(acceleration)<0.1)&(abs(acc_hat)<0.01)] = np.nan
+        acc_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan
+        position_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan
         multip = [np.nanmean(abs(acceleration[:-1] - acc_hat[:-1])),
                   np.nanmean(abs(speed[1:] - speed_hat[1:])),
                   abs(position[1:] - position_hat[1:]).mean(),
