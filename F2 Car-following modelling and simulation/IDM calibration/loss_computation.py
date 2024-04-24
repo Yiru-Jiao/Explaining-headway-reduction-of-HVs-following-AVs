@@ -17,8 +17,6 @@ def idm_loss(cfdata,parameters):
     else:
         v_0, s_0, T, alpha, beta = parameters.values
         delta = 4.
-        # l_leader = cfdata['l_leader'].iloc[0]
-        # l_follower = cfdata['l_follower'].iloc[0]
         
         s_star = np.zeros_like(time) * np.nan
         acc_hat = np.zeros_like(time) * np.nan
@@ -29,7 +27,7 @@ def idm_loss(cfdata,parameters):
         position_hat[0] = position[0]
         for t in np.arange(0,len(speed_hat)-1,1): # update every 0.1 second
             s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-cfdata['v_leader'].iloc[t])/2/np.sqrt(alpha*beta))
-            spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]# + l_leader/2 - l_follower/2
+            spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
             if speed_hat[t]<=0. and spacing_hat[t]<s_0:
                 acc_hat[t] = 0.
             else:
@@ -38,7 +36,7 @@ def idm_loss(cfdata,parameters):
             speed_hat[speed_hat<0.] = 0.
             position_hat[t+1] = position_hat[t] + (speed_hat[t]+speed_hat[t+1])/2 * (time[t+1]-time[t])
 
-        speed_hat[(speed<0.1)&(speed_hat<0.1)] = np.nan # it's not meaningful to compute loss when speed is near zero
+        speed_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan # it's not meaningful to compute loss when speed is near zero
         acc_hat[(abs(acceleration)<0.1)&(abs(acc_hat)<0.01)] = np.nan
         multip = [np.nanmean(abs(acceleration[:-1] - acc_hat[:-1])),
                   np.nanmean(abs(speed[1:] - speed_hat[1:])),

@@ -105,10 +105,9 @@ def calibrate_idm_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median, a
         return np.zeros(5) * np.nan
     
 
-# parent_dir = './' # Set your parent directory here. 
-#                   # Without change the current setting is the parent directory of this file.
-# data_path = parent_dir + 'Data/OutputData/Variability/'
-data_path = '../OutputData/'
+parent_dir = './' # Set your parent directory here. 
+                  # Without change the current setting is the parent directory of this file.
+data_path = parent_dir + 'Data/OutputData/Variability/'
 
 for cfpair in ['HH','HA']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
