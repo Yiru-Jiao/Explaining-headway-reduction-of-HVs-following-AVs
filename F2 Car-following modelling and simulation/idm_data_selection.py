@@ -19,7 +19,7 @@ def get_data(cfpair, dataset):
         cfdata = pd.read_hdf(data_path+'Waymo/CFdata/'+cfpair+'.h5', key='data')
         regimes = pd.read_csv(regime_path+'Waymo/regimes/regimes_list_'+cfpair+'.csv')
     elif dataset=='Lyft':
-        cfdata = pd.read_hdf(data_path+'Lyft5/CFdata/'+cfpair+'.h5', key='data')
+        cfdata = pd.read_hdf(data_path+'Lyft/CFdata/'+cfpair+'.h5', key='data')
         regimes = pd.read_csv(regime_path+'Lyft/regimes/regimes_list_'+cfpair+'.csv')
 
     # remove slightly negative speeds due to filtering
@@ -36,7 +36,7 @@ def get_data(cfpair, dataset):
     return cfdata
     
 
-data_path = parent_dir + 'Data/OutputData/Variability/'
+save_path = parent_dir + 'Data/OutputData/Variability/'
 
 # select data
 for dataset in ['Waymo', 'Lyft']:
@@ -44,7 +44,7 @@ for dataset in ['Waymo', 'Lyft']:
         data = get_data(cfpair, dataset)
 
         # assumption 1: leading speed should be non-negative all the time
-        data = data.loc[~data['case_id'].isin(data[data.v_leader<0].index.unique())]
+        data = data.loc[~data['case_id'].isin(data[data.v_leader<0]['case_id'].unique())]
         # assumption 2: leading speed cannot be all zero
         non_negative = data.groupby('case_id')['v_leader'].max()
         data = data.loc[data['case_id'].isin(non_negative[non_negative>0.1].index)]
@@ -61,18 +61,18 @@ for dataset in ['Waymo', 'Lyft']:
         data = data.loc[~data['case_id'].isin(data[data['v_leader']>29.]['case_id'].unique())]
 
         print(dataset, cfpair, len(data['case_id'].unique()), '{:.2f}'.format(((data.l_leader + data.l_follower)/2).mean()))
-        data.to_hdf(data_path+'cfdata_idm_'+dataset+'_'+cfpair+'.h5', key='data')
+        data.to_hdf(save_path+'cfdata_idm_'+dataset+'_'+cfpair+'.h5', key='data')
 
 # avoid overlong cases in HA (applied to Lyft only)
-data_HA = pd.read_hdf(data_path+'cfdata_idm_Lyft_HA.h5', key='data')
-data_HH = pd.read_hdf(data_path+'cfdata_idm_Lyft_HH.h5', key='data')
+data_HA = pd.read_hdf(save_path+'cfdata_idm_Lyft_HA.h5', key='data')
+data_HH = pd.read_hdf(save_path+'cfdata_idm_Lyft_HH.h5', key='data')
 
 duration_HA = data_HA.groupby('case_id')['time'].count()
 duration_HH = data_HH.groupby('case_id')['time'].count()
 print('Longest duration', duration_HH.max())
 duration_HA = duration_HA[duration_HA<=duration_HH.max()]
 data_HA = data_HA[data_HA['case_id'].isin(duration_HA.index)]
-data_HA.to_hdf(data_path+'cfdata_idm_Lyft_HA.h5', key='data')
+data_HA.to_hdf(save_path+'cfdata_idm_Lyft_HA.h5', key='data')
 
 print('HH', len(data_HH['case_id'].unique()), '{:.2f}'.format(((data_HH.l_leader + data_HH.l_follower)/2).mean()))
 print('HA', len(data_HA['case_id'].unique()), '{:.2f}'.format(((data_HA.l_leader + data_HA.l_follower)/2).mean()))
