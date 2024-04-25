@@ -18,7 +18,7 @@ def rgb_color(colorname, alpha=1.):
 
 
 
-def plot_headway_subplot(ax, data, bins, x_range, color_name, label_prefix, text_pos, linestyle, text=True, method='auto'):
+def plot_headway_subplot(ax, data, bins, x_range, color_name, label_prefix, text_pos, linestyle, text=True, method='scott'):
     ax.hist(data, bins=bins, density=True,
             fc=rgb_color(color_name, 0.1), ec=rgb_color(color_name, 0.15), lw=0.5,
             label=label_prefix)
@@ -498,7 +498,7 @@ def gipps_parameters(gipps_HH, gipps_HA):
     vars = ['v_0', 's_0', 'tau', 'alpha', 'b', 'b_leader']
     titles = [r'$v_0$ $(m/s)$',
               r'$s_0$ $(m)$',
-              r'$tau$ $(s)$',
+              r'$\tau$ $(s)$',
               r'$\alpha$ $(m/s^2)$',
               r'$b$ $(m/s^2)$',
               r'$b_{\mathrm{leader}}$ $(m/s^2)$']
@@ -642,7 +642,7 @@ def idm_sampling(idm_HA, idm_HH):
 
 
 
-def headway_leader_variability(cfdata_HH, cfdata_HA, count):
+def headway_leader_variability(cfdata_HH, cfdata_HA, thwHH, thwHA, binHH, binHA):
     fig, axes = plt.subplots(1,3,figsize=(5.5,1.3),gridspec_kw={'width_ratios':[1,0.05,1]})
     axes[1].axis('off')
     axes[0].set_xlabel('Min. THW in steady state (s)', labelpad=0.5)
@@ -665,17 +665,8 @@ def headway_leader_variability(cfdata_HH, cfdata_HA, count):
     thw_HA = cfdata_HA.loc[cfdata_HA.groupby('case_id')['thw'].idxmin()]
     thw_HA = thw_HA[thw_HA['regime'].isin(['F'])]
 
-    if count in [0,2]:
-        thwHH = 1.0
-        thwHA = -0.9
-    if count==3:
-        thwHH = -0.95
-        thwHA = 1.0
-    if count==4:
-        thwHH = 1.0
-        thwHA = -1.0
-    plot_headway_subplot(axes[0], thw_HH['thw'], thw_bins, thw_range, 'tab:blue', 'HH', thwHH, '-', method=0.15)
-    plot_headway_subplot(axes[0], thw_HA['thw'], thw_bins, thw_range, 'tab:red', 'HA', thwHA, '--', method=0.2)
+    plot_headway_subplot(axes[0], thw_HH['thw'], thw_bins, thw_range, 'tab:blue', 'HH', thwHH, '-', method=binHH)
+    plot_headway_subplot(axes[0], thw_HA['thw'], thw_bins, thw_range, 'tab:red', 'HA', thwHA, '--', method=binHA)
     pvalue, result = ks_test(thw_HH['thw'], thw_HA['thw'], text1='Heterogeneous\n', text2='Uniform')
     axes[0].text(0.99, 0.88, f'K-S p-value: {pvalue:.3f}', transform=axes[0].transAxes, va='center', ha='right')
     axes[0].text(0.99, 0.65, result, transform=axes[0].transAxes, va='center', ha='right')
