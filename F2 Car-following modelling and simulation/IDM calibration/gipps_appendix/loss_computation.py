@@ -29,7 +29,7 @@ def gipps_loss(cfdata,parameters):
             braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(cfdata['v_leader'].iloc[t])**2/b_leader
             v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
-            position_hat[t+id_tau] = position_hat[t+id_tau-1] + (speed_hat[t+id_tau-1]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t+id_tau-1])
+            position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
 
         speed_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan # it's not meaningful to compute loss when speed is near zero
         multip = [np.nanmean(abs(speed[id_tau:] - speed_hat[id_tau:])),
