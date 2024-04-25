@@ -85,11 +85,29 @@ for model, simulate in zip(['idm','gipps'], [idm_estimation, gipps_estimation]):
     data_HH = pd.read_hdf(data_path+'cfdata_idm_Lyft_HH.h5', key='data').sort_values(['case_id','time']).set_index('case_id')
     regime_list_HH = pd.read_csv(parent_dir+'Data/OutputData/CF regime/Lyft/regimes/regimes_list_HH.csv', index_col=0)
 
+    ## Make sure the start and end are not static
+    group_vleader = data_HH.groupby('case_id')['v_leader'].agg(['first','last'])
+    group_vleader = group_vleader[(group_vleader['first']>3.)&(group_vleader['last']>3.)]
+    group_vfollower = data_HH.groupby('case_id')['v_follower'].agg(['first','last'])
+    group_vfollower = group_vfollower[(group_vfollower['first']>3.)&(group_vfollower['last']>3.)]
+    group_speed = group_vleader.index.intersection(group_vfollower.index)
+    print('Number of filtered cases: {}'.format(len(group_speed)))
+    ## Reserve the static duration between 25th and 75th percentile
+    group_static = data_HH[data_HH['v_leader']<0.1].groupby('case_id')['time'].count()
+    s_duration_25 = group_static.quantile(0.25)
+    s_duration_75 = group_static.quantile(0.75)
+    print('Static duration 25th percentile: {:.2f}, 75th percentile: {:.2f}'.format(s_duration_25/10, s_duration_75/10))
+    group_static = group_static[(group_static>s_duration_25)&(group_static<s_duration_75)]
+    para_HH_lowerVar_id = regime_list_HH.loc[group_speed.intersection(group_static.index)].copy().drop(columns=['regime_comb'])
+    print('Number of cases after filtering: {}'.format(len(para_HH_lowerVar_id)))
+    ## Sort the cases by duration of steady-state car-following, i.e., regime F
+    para_HH_lowerVar_id = para_HH_lowerVar_id.sort_values(['F'], ascending=False)
+    print(para_HH_lowerVar_id.head(4))
+
     # Repeat the test 4 times
-    for count in tqdm(range(4)):
-        para_HH_lowerVar_id = regime_list_HH.loc[para_HH.index].sort_values(['F','S'], ascending=False).index[count]
-        para_HH_lowerVar = para_HH.loc[para_HH_lowerVar_id]
-        para_HH_higherVar = para_HH.loc[para_HH.index!=para_HH_lowerVar_id]
+    for count in range(4):
+        para_HH_lowerVar = para_HH.loc[para_HH_lowerVar_id.index[count]]
+        para_HH_higherVar = para_HH.loc[para_HH.index!=para_HH_lowerVar_id.index[count]]
         num_cases = len(para_HH_higherVar)
 
         follower_set = 'HH'
@@ -101,7 +119,7 @@ for model, simulate in zip(['idm','gipps'], [idm_estimation, gipps_estimation]):
 
             follower_ids = np.random.RandomState(count).choice(para_HH_higherVar.index.unique(), size=num_cases, replace=False)
             if leader_set=='HHlowerVar':
-                leader_ids = (np.ones(num_cases) * para_HH_lowerVar_id).astype(int)
+                leader_ids = (np.ones(num_cases) * para_HH_lowerVar_id.index[count]).astype(int)
                 leader_data = data_HH
             elif leader_set=='HHhigherVar':
                 leader_ids = np.random.RandomState(5+count).choice(para_HH_higherVar.index.unique(), size=num_cases, replace=False)
