@@ -36,7 +36,7 @@ def gipps_global_obj(parameters, cfdata):
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
         position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
         
-    condition = (speed[id_tau:]>0.)|(speed_hat[id_tau:]>0.) # exclude comparison when both speed and speed_hat are zero
+    condition = (speed[id_tau:]>0.001) # make sure the loss computation is not affected by zero speed
     speed = speed[id_tau:][condition]
     speed_hat = speed_hat[id_tau:][condition]
     position = position[id_tau:][condition]
@@ -70,11 +70,7 @@ def gipps_loss(cfdata, parameters):
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
             position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
             
-        condition = (speed[id_tau:]>0.)|(speed_hat[id_tau:]>0.) # exclude comparison when both speed and speed_hat are zero
-        speed_hat = speed_hat[id_tau:][condition]
-        speed = speed[id_tau:][condition]
-        mae_v = (abs(speed - speed_hat)).mean()
-
+        mae_v = (abs(speed[id_tau:] - speed_hat[id_tau:])).mean()
     return mae_v
 
 
@@ -105,9 +101,10 @@ def calibrate_gipps_global(cfdata, v_follower_max, dhw_min, thw_min, thw_median,
         return np.zeros(6) * np.nan
     
 
-parent_dir = './' # Set your parent directory here. 
-                  # Without change the current setting is the parent directory of this file.
-data_path = parent_dir + 'Data/OutputData/Variability/'
+# parent_dir = './' # Set your parent directory here. 
+#                   # Without change the current setting is the parent directory of this file.
+# data_path = parent_dir + 'Data/OutputData/Variability/'
+data_path = '../OutputData/'
 
 for cfpair in ['HH','HA']:
     data = pd.read_hdf(data_path+'cfdata_idm_Lyft_'+cfpair+'.h5', key='data')
@@ -123,7 +120,7 @@ for cfpair in ['HH','HA']:
 
     results = np.zeros((len(case_ids),6))
     i = 0
-    progress_bar = tqdm(zip(case_ids, savefile), total=len(case_ids))
+    progress_bar = tqdm(zip(case_ids[300:], savefile[300:]), total=len(case_ids))
     for case_id,savef in progress_bar:
         cfdata = data.loc[case_id]
 
