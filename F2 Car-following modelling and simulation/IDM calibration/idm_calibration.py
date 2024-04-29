@@ -41,7 +41,7 @@ def idm_global_obj(parameters, cfdata):
         speed_hat[t+3] = max(0., speed_hat[t] + acc_hat[t] * (time[t+3]-time[t]))
         position_hat[t+3] = position_hat[t] + (speed_hat[t]+speed_hat[t+3])/2 * (time[t+3]-time[t])
         
-    condition = (speed[3:]>0.)|(speed_hat[3:]>0.) # exclude comparison when both speed and speed_hat are zero
+    condition = (speed[3:]>0.001) # make sure the loss computation is not affected by zero speed
     speed = speed[3:][condition]
     speed_hat = speed_hat[3:][condition]
     position = position[3:][condition]
@@ -79,11 +79,7 @@ def idm_loss(cfdata,parameters):
             speed_hat[t+3] = max(0., speed_hat[t] + acc_hat[t] * (time[t+3]-time[t]))
             position_hat[t+3] = position_hat[t] + (speed_hat[t]+speed_hat[t+3])/2 * (time[t+3]-time[t])
 
-        condition = (speed[3:]>0.)|(speed_hat[3:]>0.) # exclude comparison when both speed and speed_hat are zero
-        speed_hat = speed_hat[3:][condition]
-        speed = speed[3:][condition]
-        mae_v = abs(speed - speed_hat).mean()
-
+        mae_v = abs(speed[3:] - speed_hat[3:]).mean()
     return mae_v
 
 
