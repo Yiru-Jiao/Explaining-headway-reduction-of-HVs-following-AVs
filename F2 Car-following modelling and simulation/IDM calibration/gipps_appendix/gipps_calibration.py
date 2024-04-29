@@ -36,9 +36,14 @@ def gipps_global_obj(parameters, cfdata):
         speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
         position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
         
-    speed[speed==0.] = np.nan
-    loss_v = np.nansum((speed_hat[id_tau:] - speed[id_tau:])**2/abs(speed[id_tau:]))/np.nansum(abs(speed[id_tau:]))
-    loss_x = np.nansum((position_hat[id_tau:] - position[id_tau:])**2/abs(position[id_tau:]))/np.nansum(abs(position[id_tau:]))
+    condition = (speed[id_tau:]>0.)|(speed_hat[id_tau:]>0.) # exclude comparison when both speed and speed_hat are zero
+    speed = speed[id_tau:][condition]
+    speed_hat = speed_hat[id_tau:][condition]
+    position = position[id_tau:][condition]
+    position_hat = position_hat[id_tau:][condition]
+
+    loss_v = np.sum((speed_hat - speed)**2/abs(speed))/np.sum(abs(speed))
+    loss_x = np.sum((position_hat - position)**2/abs(position))/np.sum(abs(position))
 
     return loss_v + loss_x
 
@@ -65,9 +70,10 @@ def gipps_loss(cfdata, parameters):
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
             position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
             
-        speed_diff = abs(speed[id_tau:] - speed_hat[id_tau:])
-        speed_diff = speed_diff[speed_diff>=0.]
-        mae_v = speed_diff.mean()
+        condition = (speed[id_tau:]>0.)|(speed_hat[id_tau:]>0.) # exclude comparison when both speed and speed_hat are zero
+        speed_hat = speed_hat[id_tau:][condition]
+        speed = speed[id_tau:][condition]
+        mae_v = (abs(speed - speed_hat)).mean()
 
     return mae_v
 
@@ -137,4 +143,4 @@ for cfpair in ['HH','HA']:
             results_tosave = pd.DataFrame(results, columns=['v_0','s_0','tau','alpha','b','b_leader'], index=case_ids)
             results_tosave.to_csv(data_path+'gipps/parameters_Lyft_'+cfpair+'.csv')
         
-        progress_bar.set_postfix(loss=gipps_loss(cfdata,result), refresh=False)
+        # progress_bar.set_postfix(loss=gipps_loss(cfdata,result), refresh=False)
