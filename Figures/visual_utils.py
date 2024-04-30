@@ -23,6 +23,7 @@ def plot_headway_subplot(ax, data, bins, x_range, color_name, label_prefix, text
             fc=rgb_color(color_name, 0.1), ec=rgb_color(color_name, 0.15), lw=0.5,
             label=label_prefix)
     kernel = gaussian_kde(data, bw_method=method)
+    data = data[(data>=x_range.min())&(data<=x_range.max())]
     mean = data.mean()
     std = data.std()
     ax.plot(x_range, kernel(x_range), c=color_name, lw=1, ls=linestyle, label=label_prefix)
@@ -678,7 +679,7 @@ def headway_leader_variability(cfdata_HH, cfdata_HA, thwHH, thwHA, binHH, binHA)
     fig.legend([(handles[0],handles[1]),(handles[2],handles[3]),
                 Line2D([], [], color='none', marker='s', markerfacecolor='none', markeredgecolor=rgb_color('tab:blue'), markersize=3),
                 Line2D([], [], color='none', marker='o', markerfacecolor='none', markeredgecolor=rgb_color('tab:red'), markersize=3)],
-               ['1,497 leaders in HH','1 leader in HH','1,497 leaders in HH','1 leader in HH'],
+               ['1,227 leaders in HH','1 leader in HH','1,227 leaders in HH','1 leader in HH'],
                frameon=False, bbox_to_anchor=(0.5, -0.3), ncol=4, loc='lower center',
                columnspacing=1, handletextpad=0.2, borderpad=0.2, handlelength=1.6)
 
