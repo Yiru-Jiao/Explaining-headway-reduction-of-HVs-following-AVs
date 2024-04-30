@@ -779,13 +779,18 @@ def scatter_zero_test(zero_tests,epoches):
     for axid,zero_test,epoch in zip([0,1,2,3],zero_tests,epoches):
         axes[axid].plot([0.015,0.015],[0,1],c='tab:gray',ls='--',lw=0.5, alpha=0.5)
         axes[axid].plot([-0.005,0.105],[0.5,0.5],c='tab:gray',ls='--',lw=0.5, alpha=0.5)
-        axes[axid].scatter(zero_test['std'], zero_test['pred'], s=12, ec='tab:red', alpha=0.7, fc='none', lw=0.7, marker='+')
+        cm = mpl.colors.LinearSegmentedColormap.from_list("MyCmapName",["tab:blue","tab:red"])
+        axes[axid].scatter(zero_test['std'], zero_test['pred'],
+                           c=zero_test['pred'], cmap=cm, vmin=0., vmax=0.9,
+                           s=12, alpha=0.7, lw=0.7, marker='+')
         axes[axid].set_title('Epoch '+str(epoch), fontsize=8, pad=2)
-    fig.text(0.53, -0.07, 'Added noise', ha='center', fontsize=8)
-    axes[0].set_ylabel('Classification')
+    fig.text(0.54, -0.07, 'Added noise', ha='center', fontsize=8)
     axes[0].set_ylim([-0.01,1.02])
     axes[0].set_yticks([0,0.5,1])
-    axes[0].set_yticklabels(['HV','0.5','AV'])
+    axes[0].set_yticklabels(['HV','Uncertain','AV'])
+    axes[0].get_yticklabels()[0].set_color("tab:blue")
+    axes[0].get_yticklabels()[1].set_color(cm(0.5))
+    axes[0].get_yticklabels()[2].set_color("tab:red")
     axes[0].set_xlim([-0.005,0.105])
     return fig, axes
 
