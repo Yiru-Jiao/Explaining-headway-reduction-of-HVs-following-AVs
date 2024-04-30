@@ -120,7 +120,7 @@ for cfpair in ['HH','HA']:
 
     results = np.zeros((len(case_ids),6))
     i = 0
-    progress_bar = tqdm(zip(case_ids[300:], savefile[300:]), total=len(case_ids))
+    progress_bar = tqdm(zip(case_ids, savefile), total=len(case_ids))
     for case_id,savef in progress_bar:
         cfdata = data.loc[case_id]
 

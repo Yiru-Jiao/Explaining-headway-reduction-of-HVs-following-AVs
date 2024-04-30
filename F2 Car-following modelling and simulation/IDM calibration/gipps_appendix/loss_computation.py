@@ -31,11 +31,16 @@ def gipps_loss(cfdata,parameters):
             speed_hat[t+id_tau] = max(0., min(v_acc, v_dec))
             position_hat[t+id_tau] = position_hat[t] + (speed_hat[t]+speed_hat[t+id_tau])/2 * (time[t+id_tau]-time[t])
 
-        speed_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan # it's not meaningful to compute loss when speed is near zero
-        multip = [np.nanmean(abs(speed[id_tau:] - speed_hat[id_tau:])),
-                  abs(position[id_tau:] - position_hat[id_tau:]).mean(),
-                  np.sqrt((np.nanmean((speed[id_tau:] - speed_hat[id_tau:])**2))), 
-                  np.sqrt(((position[id_tau:] - position_hat[id_tau:])**2).mean())]
+        condition = (speed[id_tau:]>0.)|(speed_hat[id_tau:]>0.) # exclude comparison when both speed and speed_hat are zero
+        speed = speed[id_tau:][condition]
+        speed_hat = speed_hat[id_tau:][condition]
+        position = position[id_tau:][condition]
+        position_hat = position_hat[id_tau:][condition]
+
+        multip = [np.mean(abs(speed - speed_hat)),
+                  abs(position - position_hat).mean(),
+                  np.sqrt((np.mean((speed - speed_hat)**2))), 
+                  np.sqrt((np.mean((position - position_hat)**2)))]
     
     return multip
     

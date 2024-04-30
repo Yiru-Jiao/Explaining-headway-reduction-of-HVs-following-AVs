@@ -22,29 +22,33 @@ def idm_loss(cfdata,parameters):
         acc_hat = np.zeros_like(time) * np.nan
         spacing_hat = np.zeros_like(time) * np.nan
         speed_hat = np.zeros_like(speed) * np.nan
-        speed_hat[0] = speed[0]
+        speed_hat[:3] = speed[:3]
         position_hat = np.zeros_like(position) * np.nan
-        position_hat[0] = position[0]
-        for t in np.arange(0,len(speed_hat)-1,1): # update every 0.1 second
+        position_hat[:3] = position[:3]
+        for t in np.arange(0,len(speed_hat)-3,1): # operational time interval is 0.3 second
             s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-cfdata['v_leader'].iloc[t])/2/np.sqrt(alpha*beta))
             spacing_hat[t] = cfdata['x_leader'].iloc[t] - position_hat[t]
             if speed_hat[t]<=0. and spacing_hat[t]<s_0:
                 acc_hat[t] = 0.
             else:
                 acc_hat[t] = alpha * (1 - (speed_hat[t]/v_0)**delta - (s_star[t]/spacing_hat[t])**2)
-            speed_hat[t+1] = speed_hat[t] + acc_hat[t] * (time[t+1]-time[t])
-            speed_hat[speed_hat<0.] = 0.
-            position_hat[t+1] = position_hat[t] + (speed_hat[t]+speed_hat[t+1])/2 * (time[t+1]-time[t])
+            speed_hat[t+3] = max(0., speed_hat[t] + acc_hat[t] * (time[t+3]-time[t]))
+            position_hat[t+3] = position_hat[t] + (speed_hat[t]+speed_hat[t+3])/2 * (time[t+3]-time[t])
 
-        speed_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan # it's not meaningful to compute loss when speed is near zero
-        acc_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan
-        position_hat[(speed<0.01)&(speed_hat<0.01)] = np.nan
-        multip = [np.nanmean(abs(acceleration[:-1] - acc_hat[:-1])),
-                  np.nanmean(abs(speed[1:] - speed_hat[1:])),
-                  abs(position[1:] - position_hat[1:]).mean(),
-                  np.sqrt((np.nanmean((acceleration[:-1] - acc_hat[:-1])**2))),
-                  np.sqrt((np.nanmean((speed[1:] - speed_hat[1:])**2))), 
-                  np.sqrt(((position[1:] - position_hat[1:])**2).mean())]
+        condition = (speed[3:]>0.)|(speed_hat[3:]>0.) # exclude comparison when both speed and speed_hat are zero
+        acceleration = acceleration[:-3][condition]
+        acc_hat = acc_hat[:-3][condition]
+        speed = speed[3:][condition]
+        speed_hat = speed_hat[3:][condition]
+        position = position[3:][condition]
+        position_hat = position_hat[3:][condition]
+
+        multip = [np.mean(abs(acceleration - acc_hat)),
+                  np.mean(abs(speed - speed_hat)),
+                  abs(position - position_hat).mean(),
+                  np.sqrt((np.mean((acceleration - acc_hat)**2))),
+                  np.sqrt((np.mean((speed - speed_hat)**2))), 
+                  np.sqrt((np.mean((position - position_hat)**2)))]
     
     return multip
     
