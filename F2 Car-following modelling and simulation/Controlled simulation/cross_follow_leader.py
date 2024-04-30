@@ -22,22 +22,20 @@ def idm_estimation(para_idm, leader, initial_follower, l_follower):
     acc_hat = np.zeros_like(time) * np.nan
     spacing_hat = np.zeros_like(time) * np.nan
     speed_hat = np.zeros_like(time) * np.nan
-    speed_hat[0] = v_follower[0]
+    speed_hat[0:3] = v_follower[0:3]
     position_hat = np.zeros_like(time) * np.nan
-    position_hat[0] = x_follower[0]
-    for t in np.arange(0,len(speed_hat)-1,1): # update every 0.1 second
+    position_hat[0:3] = x_follower[0:3]
+    for t in np.arange(0,len(speed_hat)-3,1): # operational time interval is 0.3 second
         s_star[t] = s_0 + max(0., speed_hat[t]*T + speed_hat[t]*(speed_hat[t]-v_leader[t])/2/np.sqrt(alpha*beta))
         spacing_hat[t] = x_leader[t] - position_hat[t]# + l_leader/2 - l_follower/2
         if speed_hat[t]<=0. and spacing_hat[t]<s_0:
             acc_hat[t] = 0.
         else:
             acc_hat[t] = alpha * (1 - (speed_hat[t]/v_0)**delta - (s_star[t]/spacing_hat[t])**2)
-        speed_hat[t+1] = speed_hat[t] + acc_hat[t] * (time[t+1]-time[t])
-        speed_hat[speed_hat<0.] = 0.
-        position_hat[t+1] = position_hat[t] + (speed_hat[t]+speed_hat[t+1])/2 * (time[t+1]-time[t])
-    acc_hat[t+1] = acc_hat[t]
+        speed_hat[t+3] = max(0., speed_hat[t] + acc_hat[t] * (time[t+3]-time[t]))
+        position_hat[t+3] = position_hat[t] + (speed_hat[t]+speed_hat[t+3])/2 * (time[t+3]-time[t])
 
-    follower = pd.DataFrame({'time':time,'a_follower':acc_hat,'v_follower':speed_hat,'x_follower':position_hat})
+    follower = pd.DataFrame({'time':time,'v_follower':speed_hat,'x_follower':position_hat})
     follower['l_follower'] = l_follower
     trajectory = follower.merge(leader, on='time', how='left')
 
@@ -57,9 +55,8 @@ def gipps_estimation(para_gipps, leader, initial_follower, l_follower):
     speed_hat[:id_tau] = v_follower[:id_tau]
     position_hat = np.zeros_like(time) * np.nan
     position_hat[:id_tau] = x_follower[:id_tau]
-    for t in np.arange(0,len(speed_hat)-id_tau,1): # update every 0.1 second
+    for t in np.arange(0,len(speed_hat)-id_tau,1):
         spacing_hat[t] = x_leader[t] - position_hat[t] #+ l_leader/2 - l_follower/2
-
         v_acc = speed_hat[t] + 2.5*alpha*tau*(1-speed_hat[t]/v_0) * np.sqrt(0.025+speed_hat[t]/v_0)
         braking_spacing = 2*(spacing_hat[t]-s_0)-tau*speed_hat[t]+(v_leader[t])**2/b_leader
         v_dec = -tau*b + np.sqrt(tau**2*b**2 + b*max(0., braking_spacing))
