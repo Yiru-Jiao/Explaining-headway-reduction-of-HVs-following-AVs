@@ -18,12 +18,13 @@ def rgb_color(colorname, alpha=1.):
 
 
 
-def plot_headway_subplot(ax, data, bins, x_range, color_name, label_prefix, text_pos, linestyle, text=True, method='scott'):
+def plot_headway_subplot(ax, data, bins, x_range, color_name, label_prefix, text_pos, linestyle, text=True, method='scott', simulation=False):
     ax.hist(data, bins=bins, density=True,
             fc=rgb_color(color_name, 0.1), ec=rgb_color(color_name, 0.15), lw=0.5,
             label=label_prefix)
     kernel = gaussian_kde(data, bw_method=method)
-    data = data[(data>=x_range.min())&(data<=x_range.max())]
+    if simulation:
+        data = data[(data>=x_range.min())&(data<=x_range.max())]
     mean = data.mean()
     std = data.std()
     ax.plot(x_range, kernel(x_range), c=color_name, lw=1, ls=linestyle, label=label_prefix)
@@ -666,8 +667,8 @@ def headway_leader_variability(cfdata_HH, cfdata_HA, thwHH, thwHA, binHH, binHA)
     thw_HA = cfdata_HA.loc[cfdata_HA.groupby('case_id')['thw'].idxmin()]
     thw_HA = thw_HA[thw_HA['regime'].isin(['F'])]
 
-    plot_headway_subplot(axes[0], thw_HH['thw'], thw_bins, thw_range, 'tab:blue', 'HH', thwHH, '-', method=binHH)
-    plot_headway_subplot(axes[0], thw_HA['thw'], thw_bins, thw_range, 'tab:red', 'HA', thwHA, '--', method=binHA)
+    plot_headway_subplot(axes[0], thw_HH['thw'], thw_bins, thw_range, 'tab:blue', 'HH', thwHH, '-', method=binHH, simulation=True)
+    plot_headway_subplot(axes[0], thw_HA['thw'], thw_bins, thw_range, 'tab:red', 'HA', thwHA, '--', method=binHA, simulation=True)
     pvalue, result = ks_test(thw_HH['thw'], thw_HA['thw'], text1='Heterogeneous\n', text2='Uniform')
     axes[0].text(0.99, 0.88, f'K-S p-value: {pvalue:.3f}', transform=axes[0].transAxes, va='center', ha='right')
     axes[0].text(0.99, 0.65, result, transform=axes[0].transAxes, va='center', ha='right')
