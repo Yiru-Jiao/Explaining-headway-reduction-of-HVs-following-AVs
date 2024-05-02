@@ -1,1 +1,4 @@
 __pycache__
+# FigureMaker_local.ipynb was used for local tests to respond to reviewers' comments. 
+FigureMaker_local.ipynb 
+# All the figures presented in the paper can be reproduced using the FigureMaker.ipynb notebook.
