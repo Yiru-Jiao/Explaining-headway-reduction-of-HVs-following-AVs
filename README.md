@@ -2,11 +2,11 @@
 This study is published in the journal "Transportation Research Part C: Emerging Technologies" with gold open access, available at <https://doi.org/10.1016/j.trc.2024.104673>.
 
 ## Highlights
-- Conflict detection involves a trade‐off between missed and false alarms.
-- Probabilities of missed and false alarms are estimated from spacing distributions.
-- Critical spacing is optimised to minimise missed and false alarms.
-- Validation on synthetic and real-world conflicts confirms superior performance.
-- Collision warning can be adaptive in varying traffic contexts and driver preferences.
+- Observation biases are inherent in data collected by automated vehicles (AVs).
+- 3 explanations for shorter headways of human drivers following AVs are validated.
+- Systematic differences in data collection and AV driving play remarkable roles.
+- Driving homogeneity and stability contribute to reliable reduction in time headway.
+- Behavioural insights from non-behavioural data require scrutiny.
 
 ## Package requirements
 `jupyter notebook`, `zarr`, `numpy`, `pandas`, `pytables`, `tqdm`, `matplotlib`, `scipy`, `joblib`, `pytorch`
